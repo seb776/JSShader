@@ -1,61 +1,79 @@
-glm.vec2(1,1);
+
 
 // TODO need to look into it
 // glm.vec2.prototype = funtion() { return glm.vec2(parseFloat(this.x.toString())); }
 
-Number.prototype.sub = function(rhs) {
-        if (rhs.hasOwnProperty('w')) { // vec4
-            return glm.vec4(parseFloat(this.toString())).sub(rhs);
-        } 
-        else if (rhs.hasOwnProperty('z')) {// vec3
-            return glm.vec3(parseFloat(this.toString())).sub(rhs);
-        }
-        else if (rhs.hasOwnProperty('y')) { // vec2
-            return glm.vec2(parseFloat(this.toString())).sub(rhs);
-        }
-        return parseFloat(this.toString())-rhs;
+Number.prototype.sub = function (rhs) {
+    if (rhs.elements == undefined)
+        return parseFloat(this.toString()) - rhs;
+    if (rhs.elements.length == 4) { // vec4
+        return glm.vec4(parseFloat(this.toString())).sub(rhs);
+    }
+    else if (rhs.elements.length == 3) {// vec3
+        return glm.vec3(parseFloat(this.toString())).sub(rhs);
+    }
+    else if (rhs.elements.length == 2) { // vec2
+        return glm.vec2(parseFloat(this.toString())).sub(rhs);
+    }
+    console.logerror("BLABLABLA");
 }
-Number.prototype.add = function(rhs) {
-    if (rhs.hasOwnProperty('w')) { // vec4
+Number.prototype.add = function (rhs) {
+    if (rhs.elements == undefined)
+        return parseFloat(this.toString()) + rhs;
+
+    if (rhs.elements.length == 4) { // vec4
         return glm.vec4(parseFloat(this.toString())).add(rhs);
-    } 
-    else if (rhs.hasOwnProperty('z')) {// vec3
+    }
+    else if (rhs.elements.length == 3) {// vec3
         return glm.vec3(parseFloat(this.toString())).add(rhs);
     }
-    else if (rhs.hasOwnProperty('y')) { // vec2
+    else if (rhs.elements.length == 2) { // vec2
         return glm.vec2(parseFloat(this.toString())).add(rhs);
     }
-    return parseFloat(this.toString())+rhs;
+    console.logerror("BLABLABLA");
 }
-Number.prototype.mul = function(rhs) {
-    console.log(rhs.w !== undefined); 
-    if (rhs.w !== undefined) { // vec4
+Number.prototype.mul = function (rhs) {
+    if (rhs.elements == undefined)
+        return parseFloat(this.toString()) / rhs;
+    if (rhs.elements.length == 4) { // vec4
         return glm.vec4(parseFloat(this.toString())).mul(rhs);
-    } 
-    else if (rhs.z !== undefined) {// vec3
+    }
+    else if (rhs.elements.length == 3) {// vec3
         return glm.vec3(parseFloat(this.toString())).mul(rhs);
     }
-    else if (rhs.y !== undefined) { // vec2
+    else if (rhs.elements.length == 2) { // vec2
         return glm.vec2(parseFloat(this.toString())).mul(rhs);
     }
-    return parseFloat(this.toString())*rhs;
+    console.logerror("BLABLABLA");
 }
-Number.prototype.div = function(rhs) {
-    if (rhs.hasOwnProperty('w')) { // vec4
+Number.prototype.div = function (rhs) {
+    if (rhs.elements == undefined)
+        return parseFloat(this.toString()) / rhs;
+    if (rhs.elements.length == 4) { // vec4
         return glm.vec4(parseFloat(this.toString())).div(rhs);
-    } 
-    else if (rhs.hasOwnProperty('z')) {// vec3
+    }
+    else if (rhs.elements.length == 3) {// vec3
         return glm.vec3(parseFloat(this.toString())).div(rhs);
     }
-    else if (rhs.hasOwnProperty('y')) { // vec2
+    else if (rhs.elements.length == 2) { // vec2
         return glm.vec2(parseFloat(this.toString())).div(rhs);
     }
-    return parseFloat(this.toString())/rhs;
-
+    console.logerror("BLABLABLA");
 }
 
-let iResolution = glm.vec2(10.,10.);
+let iResolution = glm.vec2(10., 10.);
+let iTime = 0.0;
+let iChannel0 = 0;
 
+function texture(tex, uv) {
+    return 0.0;
+}
+
+function float(v) {
+    if (typeof v == 'boolean')
+        return (v ? 1. : 0.);
+    return v;
+}
 
 // class vec2 {
 //     constructor(x, y) {
