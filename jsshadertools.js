@@ -34,7 +34,7 @@ Number.prototype.add = function (rhs) {
 }
 Number.prototype.mul = function (rhs) {
     if (rhs.elements == undefined)
-        return parseFloat(this.toString()) / rhs;
+        return parseFloat(this.toString()) * rhs;
     if (rhs.elements.length == 4) { // vec4
         return glm.vec4(parseFloat(this.toString())).mul(rhs);
     }
@@ -61,7 +61,7 @@ Number.prototype.div = function (rhs) {
     console.logerror("BLABLABLA");
 }
 
-let iResolution = glm.vec2(10., 10.);
+let iResolution = glm.vec2(100., 100.);
 let iTime = 0.0;
 let iChannel0 = 0;
 

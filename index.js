@@ -73,12 +73,19 @@ function rdr(uv, shp)
 }
 function mainImage(fragCoord)
 {
-	let __var = iResolution.xx;
 	let uv = fragCoord.xy.sub((0.50).mul(iResolution.xy)).div(iResolution.xx);
-	uv = uv.mul((2.00));
 	let col = rdr(uv, glm.mix((40.00), (400.00), glm.sin(uv.x.add(uv.y).mul((15.00)).sub(iTime)).mul((0.50)).add((0.50))));
 	col = post(uv, col);
 	return glm.vec4(col, (1));
 }
 
-console.log(mainImage(glm.vec2(1,1)));
+let ctx = document.getElementById('_canvas').getContext('2d');
+for (let x = 0; x < 100; ++x)
+{
+	for (let y = 0; y < 100; ++y)
+	{
+		let pix = mainImage(glm.vec2(x, 100-y));		
+		ctx.fillStyle = "rgba("+(pix.x*255.)+","+(pix.y*255.)+","+(pix.z*255.)+","+pix.w+")";
+		ctx.fillRect(x, y, 1, 1 );
+	}
+}
