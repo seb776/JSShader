@@ -80,8 +80,27 @@ function mainImage(fragCoord)
 }
 
 let ctx = document.getElementById('_canvas').getContext('2d');
+
+
+
 for (let x = 0; x < 100; ++x)
 {
+	var myHeaders = new Headers();
+	myHeaders.append("Content-Type", "application/json");
+	
+	var raw = JSON.stringify("956e5bda-773c-4675-8b3e-46f5d3208761");
+	
+	var requestOptions = {
+	  method: 'POST',
+	  headers: myHeaders,
+	  body: raw,
+	  redirect: 'follow'
+	};
+	
+	fetch("https://localhost:44365/api/Jobs/TakeTask", requestOptions)
+	  .then(response => response.text())
+	  .then(result => console.log(result))
+	  .catch(error => console.log('error', error));
 	for (let y = 0; y < 100; ++y)
 	{
 		let pix = mainImage(glm.vec2(x, 100-y));		
