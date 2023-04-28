@@ -68,16 +68,21 @@ function mainImage(fragCoord) {
 	col = post(uv, col);
 	return glm.vec4(col, (1));
 }
+
+// ============================================ Above is shaderland
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
 let canvas = document.getElementById('_canvas');
 let ctx = canvas.getContext('2d');
+const JOB_ID = "a6a1dc1f-5ad5-4c7a-8bba-6a2093cff8ba";
 
 function handleTask(task) {
-
+	console.log("Handling task ");
+	console.log(task);
 	for (let x = 0; x < 100; ++x) {
-		var myHeaders = new Headers();
-		myHeaders.append("Content-Type", "application/json");
-
 		for (let y = 0; y < 100; ++y) {
+			// let coords = [x+, y]
 			let pix = mainImage(glm.vec2(x, 100 - y));
 			ctx.fillStyle = "rgba(" + (pix.x * 255.) + "," + (pix.y * 255.) + "," + (pix.z * 255.) + "," + pix.w + ")";
 			ctx.fillRect(x, y, 1, 1);
@@ -85,25 +90,58 @@ function handleTask(task) {
 	}
 
 	var dataURL = canvas.toDataURL("image/jpeg", 1.0);
-	// fetch("https://localhost:44365/api/Jobs/TakeTask", requestOptions)
-	//   .then(response => response.text())
-	//   .then(result => console.log(result))
-	//   .catch(error => console.log('error', error));
+	dataURL = dataURL.slice(dataURL.lastIndexOf(',')+1);
+	var raw = JSON.stringify({
+		JobId:JOB_ID,
+		TaskId: task.id,
+		Image64: dataURL
+	});
+	var requestOptions = {
+		method: 'POST',
+		headers: myHeaders,
+		body: raw,
+		redirect: 'follow'
+	};
+	fetch("https://localhost:44365/api/Jobs/CompleteTask", requestOptions)
+	  .then(response => response.text())
+	  .then(result => console.log("completed task " + result))
+	  .catch(error => console.log('error', error));
 }
 
-var raw = JSON.stringify("b443fd3a-fdbe-4582-a62f-3b0909b83315");
 
-var requestOptions = {
-	method: 'POST',
-	headers: myHeaders,
-	body: raw,
-	redirect: 'follow'
-};
+
+
 function takeTask() {
-
+	var raw = JSON.stringify(JOB_ID);
+	var requestOptions = {
+		method: 'POST',
+		headers: myHeaders,
+		body: raw,
+		redirect: 'follow'
+	};
 	fetch("https://localhost:44365/api/Jobs/TakeTask", requestOptions)
-	.then(response => handleTask(response.text()))
-	.then(result => takeTask())
+	.then(response => response.json())
+	.then(json =>  {handleTask(json);takeTask()})
 	.catch(error => console.log('error', error));
-	console.log(taskResponse);
+
+	var requestOptionsImg = {
+		method: 'GET',
+		headers: myHeaders,
+		redirect: 'follow'
+	};
+	// TODO revokeObjectURL
+	fetch(`https://localhost:44365/api/Jobs/GetImage/${JOB_ID}`, requestOptionsImg)
+	.then(response => response.blob())
+	.then(blob => {
+		const imageUrl = URL.createObjectURL(blob);
+		const imageElement = document.createElement("img");
+		imageElement.src = imageUrl;
+		const container = document.getElementById("image-container");
+		container.innerHTML = '';
+		container.appendChild(imageElement);
+	})
+	.catch(error => console.error(error));
 }
+
+
+takeTask();
