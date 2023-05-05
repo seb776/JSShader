@@ -75,27 +75,38 @@ myHeaders.append("Content-Type", "application/json");
 
 let canvas = document.getElementById('_canvas');
 let ctx = canvas.getContext('2d');
-const JOB_ID = "a6a1dc1f-5ad5-4c7a-8bba-6a2093cff8ba";
+const JOB_ID = "0beefbd7-d967-4bd7-aa06-ee8775fd2105";
+
+const chunkSize = 10;
 
 function handleTask(task) {
-	console.log("Handling task ");
-	console.log(task);
-	for (let x = 0; x < 100; ++x) {
-		for (let y = 0; y < 100; ++y) {
+	// console.log("Handling task ");
+	// console.log(task);
+	// const start = Date.now();
+	// const end = Date.now();
+	// console.log(`Save time: ${end - start} ms`);
+
+	for (let x = 0; x < chunkSize; ++x) {
+		for (let y = 0; y < chunkSize; ++y) {
 			// let coords = [x+, y]
-			let pix = mainImage(glm.vec2(x, 100 - y));
+			// console.log(task);
+			iResolution = glm.vec2(1920.,1080.);
+			let pix = mainImage(glm.vec2(x+task.offsetX, y+task.offsetY));
 			ctx.fillStyle = "rgba(" + (pix.x * 255.) + "," + (pix.y * 255.) + "," + (pix.z * 255.) + "," + pix.w + ")";
 			ctx.fillRect(x, y, 1, 1);
 		}
 	}
-
+	
 	var dataURL = canvas.toDataURL("image/jpeg", 1.0);
+	
+	
 	dataURL = dataURL.slice(dataURL.lastIndexOf(',')+1);
 	var raw = JSON.stringify({
 		JobId:JOB_ID,
 		TaskId: task.id,
 		Image64: dataURL
 	});
+	
 	var requestOptions = {
 		method: 'POST',
 		headers: myHeaders,
@@ -104,14 +115,16 @@ function handleTask(task) {
 	};
 	fetch("https://localhost:44365/api/Jobs/CompleteTask", requestOptions)
 	  .then(response => response.text())
-	  .then(result => console.log("completed task " + result))
+	  .then(result => {/*console.log("completed task " + result)*/
+	})
 	  .catch(error => console.log('error', error));
 }
 
 
 
-
+let iTask = 0;
 function takeTask() {
+	iTask++;
 	var raw = JSON.stringify(JOB_ID);
 	var requestOptions = {
 		method: 'POST',
@@ -130,17 +143,20 @@ function takeTask() {
 		redirect: 'follow'
 	};
 	// TODO revokeObjectURL
-	fetch(`https://localhost:44365/api/Jobs/GetImage/${JOB_ID}`, requestOptionsImg)
-	.then(response => response.blob())
-	.then(blob => {
-		const imageUrl = URL.createObjectURL(blob);
-		const imageElement = document.createElement("img");
-		imageElement.src = imageUrl;
-		const container = document.getElementById("image-container");
-		container.innerHTML = '';
-		container.appendChild(imageElement);
-	})
-	.catch(error => console.error(error));
+	if (iTask % 5 == 0)
+	{
+		fetch(`https://localhost:44365/api/Jobs/GetImage/${JOB_ID}`, requestOptionsImg)
+		.then(response => response.blob())
+		.then(blob => {
+			const imageUrl = URL.createObjectURL(blob);
+			const imageElement = document.createElement("img");
+			imageElement.src = imageUrl;
+			const container = document.getElementById("image-container");
+			container.innerHTML = '';
+			container.appendChild(imageElement);
+		})
+		.catch(error => console.error(error));
+	}
 }
 
 
