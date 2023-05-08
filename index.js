@@ -75,30 +75,36 @@ myHeaders.append("Content-Type", "application/json");
 
 let canvas = document.getElementById('_canvas');
 let ctx = canvas.getContext('2d');
-const JOB_ID = "0beefbd7-d967-4bd7-aa06-ee8775fd2105";
+const JOB_ID = "6c576e7a-e69d-4631-ba32-6e3b863376a9";
 
 const chunkSize = 10;
 
 function handleTask(task) {
 	// console.log("Handling task ");
 	// console.log(task);
-	// const start = Date.now();
-	// const end = Date.now();
-	// console.log(`Save time: ${end - start} ms`);
-
+	let accRender = 0.0;
+	let accPixel = 0.0;
 	for (let x = 0; x < chunkSize; ++x) {
 		for (let y = 0; y < chunkSize; ++y) {
 			// let coords = [x+, y]
 			// console.log(task);
 			iResolution = glm.vec2(1920.,1080.);
+			const start = Date.now();
 			let pix = mainImage(glm.vec2(x+task.offsetX, y+task.offsetY));
+			const end = Date.now();
+			accRender += end - start;
 			ctx.fillStyle = "rgba(" + (pix.x * 255.) + "," + (pix.y * 255.) + "," + (pix.z * 255.) + "," + pix.w + ")";
 			ctx.fillRect(x, y, 1, 1);
+			const end2 = Date.now();
+			accPixel += end2-end;
+//			console.log(`Render time: ${end - start} ms setpixel time ${end2-end} ms`);
 		}
 	}
-	
+	console.log(`render ${accRender} pixel ${accPixel}`); 
+	const startSave = Date.now();
 	var dataURL = canvas.toDataURL("image/jpeg", 1.0);
-	
+	const endSave = Date.now();
+	console.log(`save ${endSave-startSave}`);
 	
 	dataURL = dataURL.slice(dataURL.lastIndexOf(',')+1);
 	var raw = JSON.stringify({
